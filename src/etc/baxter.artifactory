@@ -1,7 +1,6 @@
 
+# The Artifactory services base URL
 url=https://baxter.artifactoryonline.com/baxter
 
 # The credential property specifies the username:password to be used when querying
-# For example:
-#   credential=john:mypwd
 credential=username:password
