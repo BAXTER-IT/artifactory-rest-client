@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.baxter.artifactory</groupId>
+	<artifactId>artifactory-rest-client</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0-SNAPSHOT</version>
+
+	<name>Artifactory Rest Client</name>
+	<description>
+	  The set of client utilities for Artifactory. Utilities can be used during different build/deploy activities.
+	  More info on https://github.com/BAXTER-IT/artifactory-rest-client/wiki pages.
+	</description>
+
+	<url>https://github.com/BAXTER-IT/artifactory-rest-client</url>
+
+	<organization>
+		<name>Baxter Technologies Ltd</name>
+		<url>http://baxter-it.com</url>
+	</organization>
+
+	<inceptionYear>2011</inceptionYear>
+
+	<scm>
+		<connection>scm:git:git@github.com:BAXTER-IT/artifactory-rest-client.git</connection>
+		<developerConnection>scm:git:git@github.com:BAXTER-IT/artifactory-rest-client.git</developerConnection>
+		<url>git@github.com:BAXTER-IT/artifactory-rest-client.git</url>
+	</scm>
+
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/BAXTER-IT/artifactory-rest-client/issues</url>
+	</issueManagement>
+
+	<licenses>
+		<license>
+			<name>Baxter</name>
+			<url>http://baxter.com/licenses/BAXTER-CONFIG-1.0.txt</url>
+			<comments>Some comments to a license</comments>
+			<distribution>manual</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+
+		<developer>
+			<id>ykryshchuk</id>
+			<name>Yuriy Kryshchuk</name>
+			<timezone>+2</timezone>
+			<email>yuriy.kryshchuk@gmail.com</email>
+		</developer>
+
+	</developers>
+
+	<build>
+
+		<pluginManagement>
+
+			<plugins>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>rpm-maven-plugin</artifactId>
+					<version>2.1</version>
+					<extensions>true</extensions>
+				</plugin>
+
+			</plugins>
+
+		</pluginManagement>
+
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>build-standalone</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/standalone.xml</descriptor>
+							</descriptors>
+							<filters>
+								<filter>${basedir}/src/filter/standalone.properties</filter>
+							</filters>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
+		</plugins>
+
+	</build>
+
+	<dependencyManagement>
+
+		<dependencies>
+
+		</dependencies>
+
+	</dependencyManagement>
+
+	<dependencies>
+
+
+	</dependencies>
+
+	<profiles>
+
+		<profile>
+			<id>Distribution-Artifactory</id>
+			<distributionManagement>
+				<repository>
+					<id>artifactory-opensource-repository</id>
+					<name>Artifactory Opensource Repository</name>
+					<url>http://baxter.artifactoryonline.com/baxter/opensource-releases</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+
+		<profile>
+			<id>RPM</id>
+			<activation>
+				<os>
+					<family>unix</family>
+				</os>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<artifactId>maven-resources-plugin</artifactId>
+							<executions>
+								<execution>
+									<id>filter-rpm-control</id>
+									<goals>
+										<goal>copy-resources</goal>
+									</goals>
+									<phase>process-resources</phase>
+									<configuration>
+										<outputDirectory>${rpm-control.dir}</outputDirectory>
+										<resources>
+											<resource>
+												<directory>src/unix-control/rpm</directory>
+												<filtering>true</filtering>
+											</resource>
+										</resources>
+									</configuration>
+								</execution>
+							</executions>
+						</plugin>
+						<plugin>
+							<groupId>org.codehaus.mojo</groupId>
+							<artifactId>rpm-maven-plugin</artifactId>
+							<configuration>
+								<name>${unix.package.name}</name>
+								<group>${unix.package.group.name}</group>
+								<defaultUsername>${unix.user}</defaultUsername>
+								<defaultGroupname>${unix.group}</defaultGroupname>
+								<defaultFilemode>644</defaultFilemode>
+								<defaultDirmode>755</defaultDirmode>
+								<needarch>false</needarch>
+								<repackJars>false</repackJars>
+								<requires combine.children="append">
+									<require>curl</require>
+								</requires>
+								<provides>
+									<provide>${unix.package.name}</provide>
+								</provides>
+								<preinstallScriptlet>
+									<scriptFile>${rpm-control.dir}/pre-install</scriptFile>
+								</preinstallScriptlet>
+								<postinstallScriptlet>
+									<scriptFile>${rpm-control.dir}/post-install</scriptFile>
+								</postinstallScriptlet>
+								<preremoveScriptlet>
+									<scriptFile>${rpm-control.dir}/pre-remove</scriptFile>
+								</preremoveScriptlet>
+								<postremoveScriptlet>
+									<scriptFile>${rpm-control.dir}/post-remove</scriptFile>
+								</postremoveScriptlet>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>rpm-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>build-std-rpm-installer</id>
+								<phase>package</phase>
+								<goals>
+									<goal>attached-rpm</goal>
+								</goals>
+								<configuration>
+									<classifier>std</classifier>
+									<provides combine.children="append">
+										<provide>${unix.package.name}-std</provide>
+									</provides>
+									<filters>
+										<filter>${basedir}/src/filter/default.properties</filter>
+									</filters>
+									<mappings>
+										<mapping>
+											<directory>${std.bin.dir}</directory>
+											<filemode>755</filemode>
+											<sources>
+												<source>
+													<location>${basedir}/src/main/scripts/</location>
+													<filter>true</filter>
+												</source>
+											</sources>
+										</mapping>
+										<mapping>
+											<directory>${std.cfg.dir}</directory>
+											<configuration>noreplace</configuration>
+											<filemode>644</filemode>
+											<sources>
+												<source>
+													<location>${basedir}/src/etc/baxter.artifactory</location>
+												</source>
+											</sources>
+										</mapping>
+									</mappings>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<properties>
+				<rpm-control.dir>${project.build.directory}/rpm-control</rpm-control.dir>
+				<std.bin.dir>/usr/bin</std.bin.dir>
+				<std.cfg.dir>/etc/artifactory</std.cfg.dir>
+			</properties>
+		</profile>
+
+	</profiles>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<unix.package.name>${project.artifactId}</unix.package.name>
+		<unix.package.group.name>DevOps</unix.package.group.name>
+		<unix.user>devops</unix.user>
+		<unix.group>devops</unix.group>
+
+	</properties>
+
+</project>

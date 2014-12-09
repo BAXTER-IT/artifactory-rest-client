@@ -1,0 +1,15 @@
+#!/bin/sh
+CURL="curl"
+SCRIPT_DIR="$(cd $(dirname $(readlink -f $0));pwd)"
+AF_CREDENTIAL="$($SCRIPT_DIR/artifactory_credential.sh $@)"
+if [ $? == 0 ]; then
+	CURL="$CURL --user $AF_CREDENTIAL" 
+fi
+for p; do true; done
+BASE_URL="$($SCRIPT_DIR/artifactory_base_url.sh $@)"
+if [ $? == 0 ]; then
+	$CURL -s "$BASE_URL/$p"
+else
+	>&2 echo "Cannot download $p"
+	exit 1 
+fi
