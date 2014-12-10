@@ -223,6 +223,10 @@
 										</mapping>
 										<mapping>
 											<directory>${std.cfg.dir}</directory>
+											<filemode>755</filemode>
+										</mapping>
+										<mapping>
+											<directory>${std.cfg.dir}</directory>
 											<configuration>noreplace</configuration>
 											<filemode>644</filemode>
 											<sources>
@@ -252,8 +256,8 @@
 
 		<unix.package.name>${project.artifactId}</unix.package.name>
 		<unix.package.group.name>DevOps</unix.package.group.name>
-		<unix.user>devops</unix.user>
-		<unix.group>devops</unix.group>
+		<unix.user>root</unix.user>
+		<unix.group>root</unix.group>
 
 	</properties>
 
