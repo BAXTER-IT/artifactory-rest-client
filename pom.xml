@@ -223,12 +223,10 @@
 										</mapping>
 										<mapping>
 											<directory>${std.cfg.dir}</directory>
-											<filemode>755</filemode>
 										</mapping>
 										<mapping>
 											<directory>${std.cfg.dir}</directory>
 											<configuration>noreplace</configuration>
-											<filemode>644</filemode>
 											<sources>
 												<source>
 													<location>${basedir}/src/etc/baxter.artifactory</location>
