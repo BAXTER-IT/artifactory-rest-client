@@ -1,0 +1,15 @@
+#!/bin/sh
+CURL="curl"
+SCRIPT_DIR="$(cd $(dirname $(readlink -f $0));pwd)"
+AF_CREDENTIAL="$($SCRIPT_DIR/artifactory_credential.sh $@)"
+if [ $? == 0 ]; then
+	CURL="$CURL --user $AF_CREDENTIAL" 
+fi
+for p; do true; done
+API_URL="$($SCRIPT_DIR/artifactory_api_url.sh $@)"
+if [ $? == 0 ]; then
+	$CURL -X POST "$API_URL/copy/$p"
+else
+	>&2 echo "Cannot query Copy on $p"
+	exit 1 
+fi

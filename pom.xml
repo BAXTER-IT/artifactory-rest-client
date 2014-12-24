@@ -22,7 +22,7 @@
 		<url>http://baxter-it.com</url>
 	</organization>
 
-	<inceptionYear>2011</inceptionYear>
+	<inceptionYear>2014</inceptionYear>
 
 	<scm>
 		<connection>scm:git:git@github.com:BAXTER-IT/artifactory-rest-client.git</connection>
